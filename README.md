@@ -1,56 +1,42 @@
-# Project Explainer
+<div align="center">
 
-Project Explainer is an Agent Skill that turns an unfamiliar repository into clear, GitHub-ready documentation.
+<!-- Replace this with your logo if you add one later. -->
+<!-- <img src="assets/logo.png" alt="Project Explainer logo" width="120" /> -->
 
-Use it when you want an AI coding agent to explain a project from top to bottom: what the project does, what stack it uses, how to run it, what users see, how folders and files fit together, and where a developer should make changes.
+# Project Explainer Skill
 
-## What It Produces
+**Turn any unfamiliar codebase into a clear, GitHub-ready project guide.**
 
-The skill guides an agent to create documentation such as:
+[![npm version](https://img.shields.io/npm/v/project-explainer-skill?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/project-explainer-skill)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)](#quality-checks)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D16-339933?style=for-the-badge&logo=node.js&logoColor=white)](./package.json)
 
-- A high-level project summary
-- A tech stack breakdown with evidence from the repo
-- Local install, run, test, build, and deployment instructions
-- A folder-by-folder tour
-- A file-by-file tour for meaningful source-authored files
-- A description of what users see when the app runs
-- Runtime, routing, API, state, or data-flow notes
-- Known assumptions and unknowns instead of made-up claims
+</div>
 
-## Why This Skill Exists
+## Overview
 
-Most project explanations are either too shallow or too noisy. This skill pushes the agent to read the actual repository first, separate facts from inferences, skip generated clutter, and write documentation that helps a new developer become productive quickly.
+Project Explainer Skill is an npm-distributed Agent Skill for Codex, Claude Code, and other Agent Skills-compatible tools. It installs a reusable `project-explainer` skill that guides an AI coding agent through repository discovery, stack detection, setup instructions, file-by-file explanation, runtime behavior, and GitHub-ready documentation.
 
-It is especially useful before publishing a project to GitHub, handing off a codebase, onboarding contributors, or generating a stronger README.
+It is designed for developers who want a high-quality README, onboarding guide, repository tour, or handoff document without relying on vague guesses or generic boilerplate.
 
-## Repository Contents
+## Key Features
 
-```text
-project-explainer/
-+-- bin/
-|   +-- install.js
-+-- SKILL.md
-+-- README.md
-+-- LICENSE
-+-- package.json
-+-- agents/
-|   +-- openai.yaml
-+-- references/
-    +-- report-template.md
-```
+- **One-command installer**: Installs into Codex, Claude Code, or both with `npx project-explainer-skill install all`.
+- **Cross-agent support**: Targets Codex skill directories (`.agents/skills`) and Claude skill directories (`.claude/skills`).
+- **User or project scope**: Installs globally for the current user or locally inside a specific repository.
+- **Zero runtime dependencies**: Uses only Node.js built-ins: `fs`, `os`, and `path`.
+- **Safe overwrite behavior**: Copies the skill payload into the expected destination with deterministic file replacement.
+- **GitHub-ready output guidance**: The skill prompts agents to explain stack, execution, folder structure, files, user experience, testing, deployment, and assumptions.
+- **Reference template included**: Ships `references/report-template.md` for consistent long-form project documentation.
+- **Small package footprint**: The npm package contains only the installer, skill files, metadata, and documentation.
 
-| Path | Purpose |
-| --- | --- |
-| `SKILL.md` | Main skill file. Agents read the frontmatter for discovery and load the instructions when relevant. |
-| `references/report-template.md` | Optional Markdown skeleton for the project explanation report. |
-| `agents/openai.yaml` | Optional Codex UI metadata for display name, short description, and default prompt. |
-| `bin/install.js` | npm-powered installer that copies the skill into Codex and/or Claude skill directories. |
-| `package.json` | npm package metadata and CLI entrypoints. |
-| `README.md` | Human-facing GitHub documentation for installing and using the skill. |
+## Installation
 
-## Install With npm
+> [!IMPORTANT]
+> Requires **Node.js 16 or newer**. The package is CommonJS and uses `fs.cpSync`, which is available in modern Node versions.
 
-Install Project Explainer for both Codex and Claude:
+Install the skill for both Codex and Claude Code:
 
 ```bash
 npx project-explainer-skill install all
@@ -62,255 +48,201 @@ Install only for Codex:
 npx project-explainer-skill install codex
 ```
 
-Install only for Claude:
+Install only for Claude Code:
 
 ```bash
 npx project-explainer-skill install claude
 ```
 
-By default, the installer uses user-level skill directories:
-
-```text
-Codex:  ~/.agents/skills/project-explainer
-Claude: ~/.claude/skills/project-explainer
-```
-
-To install into the current project instead:
+Install into the current project instead of your user-level skills folder:
 
 ```bash
 npx project-explainer-skill install all --scope project
 ```
 
-To install into a specific project directory:
+Install into a specific project path:
 
 ```bash
 npx project-explainer-skill install codex --scope project --cwd /path/to/repo
 ```
 
-The npm package installs the skill files into the right local skill directory. If your agent is already running and does not detect the new skill, restart it.
+## Build From Source
 
-## Install From A Local Clone
-
-If you cloned this repository and want to install without npm:
+This project uses **npm** and has no external dependencies.
 
 ```bash
-node bin/install.js install all
+git clone https://github.com/Abdelouahedb/project-explainer-skill.git
+cd project-explainer-skill
+npm install
+npm test
+npm pack --dry-run
 ```
 
-Or install only one agent:
+## Quick Start
+
+Install the skill:
 
 ```bash
-node bin/install.js install codex
-node bin/install.js install claude
+npx project-explainer-skill install all
 ```
 
-## Install In Codex
+Then ask your agent to use it.
 
-Codex supports Agent Skills in the CLI, IDE extension, and Codex app. Current Codex documentation says skills can be installed at repository, user, admin, or system scope.
-
-### npm Install
-
-```bash
-npx project-explainer-skill install codex
-```
-
-For one repository only:
-
-```bash
-npx project-explainer-skill install codex --scope project
-```
-
-Then start Codex and ask:
+For Codex:
 
 ```text
-Use $project-explainer to create a GitHub-ready project guide for this repo.
+Use $project-explainer to explain this repository and create a GitHub-ready PROJECT_GUIDE.md.
 ```
 
-### Manual Project Install
-
-Copy this folder into the repository where you want the skill available:
-
-```bash
-mkdir -p .agents/skills
-cp -R project-explainer .agents/skills/project-explainer
-```
-
-On Windows PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force .agents\skills
-Copy-Item -Recurse project-explainer .agents\skills\project-explainer
-```
-
-Then start Codex from that repository and ask:
-
-```text
-Use $project-explainer to create a GitHub-ready project guide for this repo.
-```
-
-### Manual User Install
-
-Use this when you want the skill available across projects:
-
-```bash
-mkdir -p ~/.agents/skills
-cp -R project-explainer ~/.agents/skills/project-explainer
-```
-
-On Windows PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.agents\skills"
-Copy-Item -Recurse project-explainer "$HOME\.agents\skills\project-explainer"
-```
-
-If Codex is already running and the skill does not appear, restart Codex.
-
-## Install In Claude Code
-
-Claude Code supports personal and project skills.
-
-### npm Install
-
-```bash
-npx project-explainer-skill install claude
-```
-
-For one repository only:
-
-```bash
-npx project-explainer-skill install claude --scope project
-```
-
-Then run Claude Code and invoke:
+For Claude Code:
 
 ```text
 /project-explainer
 ```
 
-or ask naturally:
+Or ask naturally:
 
 ```text
-Explain this whole repository and create a GitHub-ready README.
+Explain this whole repository, including the tech stack, folder structure, important files, setup commands, and what users see when it runs.
 ```
 
-### Manual Personal Install
+## CLI Reference
 
 ```bash
-mkdir -p ~/.claude/skills
-cp -R project-explainer ~/.claude/skills/project-explainer
+npx project-explainer-skill install <target> [options]
 ```
 
-On Windows PowerShell:
+| Argument | Values | Description |
+| --- | --- | --- |
+| `<target>` | `all` | Install for Codex and Claude Code. |
+| `<target>` | `codex` | Install only into Codex skill directories. |
+| `<target>` | `claude` | Install only into Claude Code skill directories. |
 
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.claude\skills"
-Copy-Item -Recurse project-explainer "$HOME\.claude\skills\project-explainer"
-```
+| Option | Values | Default | Description |
+| --- | --- | --- | --- |
+| `--scope` | `user`, `project` | `user` | Choose whether to install for the current user or into a project directory. |
+| `--cwd` | path | current working directory | Project directory used when `--scope project` is selected. |
+| `--help` | none | none | Print installer usage. |
 
-Then run Claude Code and invoke:
+## Install Targets
+
+| Agent | User scope | Project scope |
+| --- | --- | --- |
+| Codex | `~/.agents/skills/project-explainer` | `<cwd>/.agents/skills/project-explainer` |
+| Claude Code | `~/.claude/skills/project-explainer` | `<cwd>/.claude/skills/project-explainer` |
+
+> [!NOTE]
+> If your agent is already running and does not detect the new skill, restart the agent or reload its skills list.
+
+## What The Skill Teaches Agents To Produce
+
+The installed skill guides an agent to create documentation with:
+
+- A high-level project summary
+- A precise tech stack breakdown
+- Local install, run, test, build, and deployment instructions
+- Folder-by-folder and file-by-file explanations
+- A description of what users see when the project runs
+- Runtime, routing, API, state, or data-flow notes
+- Testing and quality-check guidance
+- Known unknowns and assumptions instead of invented details
+
+<details>
+<summary>Repository structure</summary>
 
 ```text
-/project-explainer
-```
-
-or ask naturally:
-
-```text
-Explain this whole repository and create a GitHub-ready README.
-```
-
-### Manual Project Install
-
-Copy the folder into a project:
-
-```bash
-mkdir -p .claude/skills
-cp -R project-explainer .claude/skills/project-explainer
-```
-
-Claude Code watches existing skill directories for changes. If you create the top-level skills directory after Claude Code has already started, restart Claude Code.
-
-## Install In Claude.ai
-
-Claude.ai custom skills are uploaded as ZIP files. npm can install the local Claude Code skill folder, but Claude.ai still expects an uploaded ZIP through the web UI.
-
-1. Make sure the ZIP contains the `project-explainer/` folder at the root.
-2. Go to Claude.ai.
-3. Open `Customize > Skills`.
-4. Click the add button, choose to create or upload a skill, and upload the ZIP.
-5. Toggle the skill on.
-6. Test it with a prompt such as:
-
-```text
-Use Project Explainer to document this uploaded repository for GitHub.
-```
-
-Claude skills require code execution to be enabled. Review any skill before enabling it, especially if it includes scripts or dependencies. This skill is instruction-only plus a Markdown reference template.
-
-## Install In Other Agent Skill Systems
-
-This skill follows the open Agent Skills pattern:
-
-```text
-skill-name/
+project-explainer-skill/
++-- bin/
+|   +-- install.js
++-- agents/
+|   +-- openai.yaml
++-- references/
+|   +-- report-template.md
 +-- SKILL.md
++-- README.md
++-- LICENSE
++-- package.json
+```
+
+</details>
+
+<details>
+<summary>How the installer works</summary>
+
+The CLI parses `install <target>` and copies the skill payload into the correct destination directory.
+
+```text
+package root
++-- SKILL.md
++-- README.md
++-- agents/
 +-- references/
 ```
 
-For any agent that supports Agent Skills:
-
-1. Find that agent's project-level or user-level skills directory.
-2. Copy the full `project-explainer/` folder into that directory.
-3. Restart or reload the agent if it does not detect new skills live.
-4. Invoke the skill by name or ask for a repository explanation naturally.
-
-If an agent does not support skills yet, you can still use the skill manually by pasting `SKILL.md` into the agent as instructions and attaching `references/report-template.md` when you want a report skeleton.
-
-## Example Prompts
+Those files are copied into one or more target folders:
 
 ```text
-Use $project-explainer to explain this entire repository and create PROJECT_GUIDE.md.
+~/.agents/skills/project-explainer
+~/.claude/skills/project-explainer
+<cwd>/.agents/skills/project-explainer
+<cwd>/.claude/skills/project-explainer
 ```
 
-```text
-Use Project Explainer to write a README that explains the stack, folder structure, every important file, how to run the app, and what users see.
-```
+The installer uses `fs.cpSync(..., { recursive: true, force: true })`, so reinstalling updates the existing skill files.
 
-```text
-Use project-explainer to audit the docs in this repo and replace vague sections with accurate setup and architecture details.
-```
+</details>
 
-## Safety Notes
+## Quality Checks
 
-- Do not include secrets in generated documentation.
-- Treat environment variables as names and purposes only, not values.
-- Review generated docs before publishing.
-- If the agent runs tests or builds, check failures before copying commands into public docs.
-- Keep the skill focused. Add separate skills for other workflows instead of turning this into a general documentation mega-skill.
-
-## Updating The Skill
-
-Edit `SKILL.md` when you want to change the agent workflow. Edit `references/report-template.md` when you want to change the default report shape.
-
-After changes, validate the frontmatter:
+Run the package smoke test:
 
 ```bash
-python /path/to/quick_validate.py /path/to/project-explainer
+npm test
 ```
 
-At minimum, confirm that `SKILL.md` starts with YAML frontmatter containing `name` and `description`.
+Preview the npm package contents:
 
-## Sources
+```bash
+npm pack --dry-run
+```
 
-This README is based on the open Agent Skills format plus current Codex and Claude skill installation behavior:
+Expected behavior:
 
-- OpenAI Codex manual: https://developers.openai.com/codex/skills
-- Claude Code docs: https://code.claude.com/docs/en/skills
-- Claude Help Center, Use Skills in Claude: https://support.claude.com/en/articles/12512180-use-skills-in-claude
-- Claude Help Center, How to create custom skills: https://support.claude.com/en/articles/12512198-how-to-create-custom-skills
-- Agent Skills open standard: https://agentskills.io
+- `npm test` prints the CLI help text.
+- `npm pack --dry-run` includes `SKILL.md`, `README.md`, `agents/`, `references/`, `bin/`, `package.json`, and `LICENSE`.
+
+## Contributing
+
+Open-source contributions are welcome. Keep the skill focused, practical, and useful for real repository documentation.
+
+1. **Fork** the repository.
+2. **Branch** from `main` with a focused name:
+
+   ```bash
+   git checkout -b improve-installer-docs
+   ```
+
+3. **Commit** your changes:
+
+   ```bash
+   git commit -m "Improve installer documentation"
+   ```
+
+4. **Push** your branch:
+
+   ```bash
+   git push origin improve-installer-docs
+   ```
+
+5. **Open a pull request** with a short explanation of what changed and why.
 
 ## License
 
-MIT
+Released under the [MIT License](./LICENSE).
+
+## Sources
+
+- [OpenAI Codex Skills](https://developers.openai.com/codex/skills)
+- [Claude Code Skills](https://code.claude.com/docs/en/skills)
+- [Claude custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)
+- [Agent Skills open standard](https://agentskills.io)
