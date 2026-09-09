@@ -6,6 +6,7 @@ const path = require("path");
 
 const skillName = "project-explainer";
 const packageRoot = path.resolve(__dirname, "..");
+const managedEntries = ["SKILL.md", "agents", "references"];
 
 const help = `Project Explainer Skill installer
 
@@ -41,9 +42,15 @@ function parseArgs(argv) {
   for (let index = 2; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--scope") {
+      if (!args[index + 1] || args[index + 1].startsWith("--")) {
+        throw new Error('Missing value for "--scope".');
+      }
       scope = args[index + 1];
       index += 1;
     } else if (arg === "--cwd") {
+      if (!args[index + 1] || args[index + 1].startsWith("--")) {
+        throw new Error('Missing value for "--cwd".');
+      }
       cwd = path.resolve(args[index + 1]);
       index += 1;
     } else {
@@ -87,10 +94,9 @@ function installSkill(destinationRoot) {
   const destination = path.join(destinationRoot, skillName);
   fs.mkdirSync(destination, { recursive: true });
 
-  copyPath(path.join(packageRoot, "SKILL.md"), path.join(destination, "SKILL.md"));
-  copyPath(path.join(packageRoot, "README.md"), path.join(destination, "README.md"));
-  copyPath(path.join(packageRoot, "agents"), path.join(destination, "agents"));
-  copyPath(path.join(packageRoot, "references"), path.join(destination, "references"));
+  for (const entry of managedEntries) {
+    copyPath(path.join(packageRoot, entry), path.join(destination, entry));
+  }
 
   return destination;
 }

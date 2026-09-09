@@ -28,6 +28,6 @@
     "node": ">=16"
   },
   "scripts": {
-    "test": "node bin/install.js --help"
+    "test": "node test/install.test.js"
   }
 }

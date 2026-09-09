@@ -1,110 +1,92 @@
 ---
 name: project-explainer
-description: Analyze and explain an entire software project or repository in clear GitHub-ready documentation. Use when the user asks for a codebase tour, project explanation, repository map, folder-by-folder or file-by-file breakdown, stack detection, setup/run instructions, what users see when the app runs, README expansion, onboarding docs, architecture summary, or a polished guide to put in GitHub.
+description: Explain a software repository or substantial subsystem through evidence-backed architecture notes, onboarding documentation, repository tours, or GitHub-ready guides. Use for codebase overviews, stack and structure analysis, setup and runtime documentation, or tracing how a feature works across files. Do not use for a narrow question about one isolated function unless broader repository context is needed.
 ---
 
 # Project Explainer
 
-## Purpose
+Help a developer form an accurate mental model of an unfamiliar repository: what it does, how it is organized, how execution flows through it, how to run it, and where to make common changes.
 
-Create accurate, useful, GitHub-ready documentation that helps a new developer understand what a project is, how it is built, how to run it, what each folder and source-authored file does, and what the end user experiences.
+Treat the repository as the source of truth. Separate verified facts, reasoned inferences, and unknowns. Never infer behavior merely from a filename or dependency name.
 
-Prefer evidence from the repository over assumptions. If something cannot be verified, mark it as an inference or an unknown.
+## Choose the Scope
 
-## Workflow
+Infer the smallest scope that satisfies the request:
 
-1. Inventory the repository.
-   - Use `rg --files` first.
-   - Identify source files, config files, package manifests, lockfiles, build outputs, generated files, tests, docs, public assets, environment examples, CI files, and deployment files.
-   - Exclude or summarize dependency/vendor/build/cache folders such as `node_modules`, `.git`, `dist`, `build`, `.next`, `.turbo`, `coverage`, `__pycache__`, and generated lock artifacts unless they are directly relevant.
+- **Overview:** orientation, stack, major boundaries, entrypoints, and common workflows.
+- **Deep dive:** one subsystem, feature, request path, or runtime flow across files.
+- **Full guide:** onboarding or GitHub documentation for the whole repository.
+- **Inventory:** folder-by-folder or file-by-file coverage only when the user asks for it or completeness is central to the deliverable.
 
-2. Detect the stack.
-   - Read manifests and config files before describing technologies: `package.json`, lockfiles, framework configs, `requirements.txt`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `Dockerfile`, compose files, CI configs, deploy configs, and database/schema files.
-   - Capture language, framework, runtime, package manager, styling approach, test framework, build tools, database, auth, external APIs, deployment target, and notable libraries.
-   - Distinguish confirmed facts from likely inferences.
+Answer inline by default. Create or edit a Markdown artifact only when requested or when the user clearly wants repository documentation. Do not replace an existing README unless explicitly authorized; prefer a separate `PROJECT_GUIDE.md` or `REPOSITORY_TOUR.md` when the destination is unspecified.
 
-3. Understand execution.
-   - Read scripts, entrypoints, server files, app routers, CLI files, Docker setup, and environment examples.
-   - Explain install, development, test, build, and production commands.
-   - Include required environment variables when visible, but never invent secrets or expose real secret values.
-   - If the project can be run safely and the user asked for practical docs, run the lowest-risk verification command available, such as package script listing, tests, build, or dev server inspection.
+## Investigate
 
-4. Trace the product behavior.
-   - For frontend apps, inspect routes/pages/components/state/data flow and explain what the user sees on first load and in major interactions.
-   - For APIs, explain endpoints, request/response shapes when discoverable, auth requirements, and data flow.
-   - For CLIs, explain commands, arguments, inputs, outputs, and side effects.
-   - For libraries, explain public exports, intended consumers, and example usage.
+1. **Respect repository instructions and current work.**
+   - Read applicable `AGENTS.md`, `CONTRIBUTING.md`, or equivalent guidance before editing.
+   - Inspect `git status --short` and preserve unrelated user changes.
 
-5. Explain structure at two levels.
-   - Folder map: explain every meaningful top-level folder and important nested folders.
-   - File catalog: explain every source-authored file that matters to understanding, running, testing, or deploying the project.
-   - Group repetitive, generated, image/font, or fixture files when a per-file explanation adds noise. State the grouping rule.
+2. **Map the repository efficiently.**
+   - Start with `rg --files`, `git ls-files`, or an equivalent tracked-file inventory.
+   - Identify workspace boundaries, manifests, lockfiles, entrypoints, routes, schemas, tests, CI, deployment configuration, docs, and environment examples.
+   - Exclude dependency, cache, generated, coverage, and build-output directories unless they affect the explanation. Group repetitive assets, fixtures, migrations, or generated files instead of cataloging them mechanically.
+   - For a large monorepo, map packages and their relationships before reading individual files. Sample repeated packages only when the grouping rule is defensible and disclose the sampling.
 
-6. Produce a polished document.
-   - Start with a short high-level summary.
-   - Then provide quick start instructions.
-   - Then explain stack, architecture, folders, files, runtime behavior, user experience, tests, deployment, and maintenance notes.
-   - Use headings, concise prose, and tables where they improve scanning.
-   - Write for a developer landing on the GitHub repo for the first time.
-   - Avoid hype, vague claims, and restating filenames without explaining their purpose.
+3. **Establish the stack from evidence.**
+   - Confirm languages, runtimes, package managers, frameworks, build tools, test tools, storage, authentication, external services, and deployment targets from manifests, imports, configuration, and code.
+   - Distinguish declared dependencies from technology actually used by the relevant execution path.
 
-## Output Shape
+4. **Trace execution, not just structure.**
+   - Begin at real entrypoints and follow control and data flow through routers, handlers, services, state, persistence, and external boundaries.
+   - For frontends, connect routes, layouts, components, state, network calls, and visible user states.
+   - For APIs, connect startup, middleware, auth, handlers, domain logic, storage, and response/error paths.
+   - For CLIs, connect command registration, argument parsing, execution, outputs, and side effects.
+   - For libraries, connect public exports to core abstractions, extension points, and representative consumers or tests.
+   - Use tests to confirm contracts and edge cases; do not present test expectations as proof that runtime behavior succeeds.
 
-When the user asks for a GitHub-ready artifact, create a Markdown file such as `PROJECT_GUIDE.md`, `REPOSITORY_TOUR.md`, or an improved `README.md`, depending on the request and repo conventions.
+5. **Maintain an evidence map while working.**
+   - Tie important claims to concrete files, symbols, commands, or observed output.
+   - When code, docs, and configuration disagree, describe the discrepancy and prioritize executable code and current configuration unless there is evidence otherwise.
+   - Never print secrets. Mention environment-variable names and purpose only; redact any discovered values.
 
-Use this default section order unless the project needs a better one:
+6. **Verify proportionally.**
+   - Prefer read-only inspection first. Run existing low-risk checks when they materially improve confidence.
+   - Do not install dependencies, start long-running services, mutate data, or call external systems merely to make the guide appear complete. Do so only when the request requires it and authorization permits it.
+   - Record the exact command and outcome for checks that affect the conclusions. A failed check is evidence, not a reason to invent a successful workflow.
 
-1. Project summary
-2. What the project does
-3. What users see or can do
-4. Tech stack
-5. How the app is structured
-6. Folder-by-folder tour
-7. File-by-file tour
-8. How to run locally
-9. Available scripts or commands
-10. Environment variables and configuration
-11. Data flow, API flow, or state flow
-12. Testing and quality checks
-13. Build and deployment
-14. Extension points and maintenance notes
-15. Known unknowns or assumptions
+## Write the Explanation
 
-For a reusable report skeleton, read `references/report-template.md`.
+Lead with the mental model, then add detail. A strong explanation usually covers:
 
-## Quality Bar
+- the project's purpose and intended users;
+- the main runtime pieces and how they relate;
+- the path through one representative request, interaction, or command;
+- verified setup, development, test, build, and deployment commands;
+- configuration and external-service requirements;
+- where a developer would make common changes;
+- uncertainties, stale documentation, or unverified assumptions.
 
-- Be specific: name concrete files, scripts, routes, modules, and commands.
-- Be honest: label unknowns instead of filling gaps with generic guesses.
-- Be complete but not mechanical: cover every meaningful file without wasting space on generated assets.
-- Be beginner-friendly without being shallow: define project-specific relationships and responsibilities.
-- Keep setup instructions executable: commands should be copyable and ordered.
-- Preserve user changes: do not overwrite existing docs unless the user explicitly asks for replacement.
-- If editing docs in a repository, match the repo's existing tone and formatting.
+Use a compact tree for hierarchy, a table for repeated mappings, and a flow diagram only when it makes a multi-step relationship easier to understand. Explain why a file or module matters rather than paraphrasing its name. Avoid exhaustive section sets, repeated facts, dependency dumps, and generic framework tutorials.
 
-## Useful Reconnaissance Commands
+For GitHub-ready documents:
 
-Use commands appropriate to the environment:
+- use repository-relative links to important files when useful;
+- make commands copyable and state their working directory;
+- adapt headings to the project instead of forcing a universal outline;
+- include generated timestamps or volatile version claims only when the user needs them;
+- match the repository's existing terminology, tone, and Markdown conventions.
 
-```bash
-rg --files
-git status --short
-git ls-files
-```
+Read [references/report-template.md](references/report-template.md) when producing a substantial standalone guide. It is a menu of sections, not a mandatory form.
 
-For JavaScript or TypeScript projects:
+## Quality Check
 
-```bash
-npm run
-npm test
-npm run build
-```
+Before delivering, confirm that:
 
-For Python projects:
-
-```bash
-python -m pytest
-python -m pip show -f <package>
-```
-
-Run commands only when they are safe and useful for the user's goal. If a command fails, include the failure and what it implies.
+- every major claim has repository evidence;
+- architecture and runtime flow are explained, not merely listed;
+- commands come from current scripts or configuration and were not invented;
+- declared, observed, inferred, and unknown facts are distinguishable;
+- coverage matches the requested scope;
+- generated and repetitive content is grouped transparently;
+- secrets and unrelated user changes remain untouched;
+- the result tells a newcomer both **how the system works** and **where to change it**.

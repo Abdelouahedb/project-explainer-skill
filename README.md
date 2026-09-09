@@ -9,7 +9,6 @@
 
 [![npm version](https://img.shields.io/npm/v/project-explainer-skill?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/project-explainer-skill)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)](#quality-checks)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D16-339933?style=for-the-badge&logo=node.js&logoColor=white)](./package.json)
 
 </div>
@@ -26,7 +25,8 @@ It is designed for developers who want a high-quality README, onboarding guide, 
 - **Cross-agent support**: Targets Codex skill directories (`.agents/skills`) and Claude skill directories (`.claude/skills`).
 - **User or project scope**: Installs globally for the current user or locally inside a specific repository.
 - **Zero runtime dependencies**: Uses only Node.js built-ins: `fs`, `os`, and `path`.
-- **Safe overwrite behavior**: Copies the skill payload into the expected destination with deterministic file replacement.
+- **Focused, evidence-backed analysis**: Scales from an architecture overview to a subsystem deep dive or explicitly requested file inventory.
+- **Conservative updates**: Refreshes managed skill files while leaving unrelated files in the destination untouched.
 - **GitHub-ready output guidance**: The skill prompts agents to explain stack, execution, folder structure, files, user experience, testing, deployment, and assumptions.
 - **Reference template included**: Ships `references/report-template.md` for consistent long-form project documentation.
 - **Small package footprint**: The npm package contains only the installer, skill files, metadata, and documentation.
@@ -154,6 +154,8 @@ The installed skill guides an agent to create documentation with:
 project-explainer-skill/
 +-- bin/
 |   +-- install.js
++-- test/
+|   +-- install.test.js
 +-- agents/
 |   +-- openai.yaml
 +-- references/
@@ -169,12 +171,11 @@ project-explainer-skill/
 <details>
 <summary>How the installer works</summary>
 
-The CLI parses `install <target>` and copies the skill payload into the correct destination directory.
+The CLI parses `install <target>` and copies the managed skill payload into the correct destination directory.
 
 ```text
 package root
 +-- SKILL.md
-+-- README.md
 +-- agents/
 +-- references/
 ```
@@ -188,13 +189,13 @@ Those files are copied into one or more target folders:
 <cwd>/.claude/skills/project-explainer
 ```
 
-The installer uses `fs.cpSync(..., { recursive: true, force: true })`, so reinstalling updates the existing skill files.
+The installer uses `fs.cpSync(..., { recursive: true, force: true })`, so reinstalling updates managed files while preserving unrelated files already present in the destination.
 
 </details>
 
 ## Quality Checks
 
-Run the package smoke test:
+Run the installer test suite:
 
 ```bash
 npm test
@@ -206,9 +207,11 @@ Preview the npm package contents:
 npm pack --dry-run
 ```
 
-Expected behavior:
+The tests verify:
 
-- `npm test` prints the CLI help text.
+- help output and exit status;
+- project-scoped installation and payload contents;
+- invalid target handling and missing option values.
 - `npm pack --dry-run` includes `SKILL.md`, `README.md`, `agents/`, `references/`, `bin/`, `package.json`, and `LICENSE`.
 
 ## Contributing

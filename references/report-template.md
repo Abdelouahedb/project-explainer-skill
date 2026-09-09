@@ -1,87 +1,104 @@
-# Project Explanation Report Template
+# Standalone Project Guide Template
 
-Use this template when creating GitHub-ready project documentation. Adapt section names to the repository.
+Use this reference for a substantial GitHub-ready guide. Select, rename, reorder, or omit sections according to the repository and the user's requested depth. Do not leave empty sections behind.
 
 ````markdown
-# Project Name
+# Project name
 
-## Project Summary
+One or two sentences describing the product, intended user, and primary outcome.
 
-Short explanation of what the project is, who it is for, and the main outcome it provides.
+## Mental model
 
-## What Users See
+Explain the few major runtime pieces and how they cooperate. Introduce project-specific terms here.
 
-Describe the first screen or primary interface. Cover the main flows, visible states, and important interactions.
-
-## Tech Stack
-
-| Area | Technology | Evidence |
-| --- | --- | --- |
-| Runtime |  |  |
-| Framework |  |  |
-| Styling |  |  |
-| Testing |  |  |
-| Build/deploy |  |  |
-
-## How To Run Locally
-
-```bash
-# install dependencies
-
-# start development
-
-# run tests
-
-# build for production
+```text
+user or caller
+    -> entrypoint
+    -> application/domain logic
+    -> persistence or external service
+    -> result
 ```
 
-## Project Structure
+## What users can do
+
+Describe the primary interface and representative flows. For a non-UI project, replace this with public API, CLI, or library usage.
+
+## Quick start
+
+State prerequisites and the working directory. Include only commands supported by current repository evidence.
+
+```bash
+# install
+
+# configure
+
+# run
+```
+
+## Technology map
+
+| Concern | Technology | Role in this project | Evidence |
+| --- | --- | --- | --- |
+| Runtime |  |  |  |
+| Application framework |  |  |  |
+| Storage |  |  |  |
+| Testing |  |  |  |
+| Build/deployment |  |  |  |
+
+Include the Evidence column when auditability matters; otherwise link evidence naturally in the prose.
+
+## Repository map
 
 ```text
 .
-+-- folder/
-+-- file
++-- important-folder/  # responsibility, not a filename paraphrase
+`-- important-file     # why it matters
 ```
 
-## Folder Tour
+Explain meaningful boundaries and grouping rules. Do not reproduce a giant raw tree.
 
-| Folder | Purpose |
-| --- | --- |
-| `src/` |  |
+## How execution flows
 
-## File Tour
+Trace one representative request, interaction, job, or command from entrypoint to result. Name the files or symbols responsible at each stage and include important error or authorization paths.
 
-| File | Purpose |
-| --- | --- |
-| `package.json` |  |
+## Key modules
 
-## Architecture And Data Flow
+| Area | Important files | Responsibility | Collaborates with |
+| --- | --- | --- | --- |
+|  |  |  |  |
 
-Explain entrypoints, routing, state management, API calls, persistence, and boundaries between modules.
+For an explicitly requested file inventory, expand this into a folder and file catalog. Group generated files, static assets, repetitive fixtures, and migrations, and state the grouping rule.
 
-## Configuration
+## Configuration and external services
 
-Document visible environment variables, config files, feature flags, ports, and external services. Do not include secret values.
+Document environment-variable names, config sources, defaults, ports, feature flags, and external dependencies. Never include secret values.
 
-## Scripts And Commands
+## Commands
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` |  |
+| Command | Working directory | Purpose | Verification status |
+| --- | --- | --- | --- |
+|  |  |  | Declared / ran successfully / failed / not run |
 
-## Testing
+## Testing and quality
 
-Explain test tools, test locations, commands, and any observed test status.
+Explain test locations, levels, fixtures, linters, type checks, and CI gates. Distinguish configured checks from checks actually run during this review.
 
-## Build And Deployment
+## Build and deployment
 
-Explain production build output, hosting target, Docker/CI/deploy config, and release steps if visible.
+Explain artifacts, containers, CI/CD, hosting, migrations, and release flow only as far as repository evidence supports them.
 
-## Extension Points
+## Where to make common changes
 
-Explain where a developer would add routes, components, API endpoints, models, styles, tests, or config.
+| Goal | Start here | Also inspect |
+| --- | --- | --- |
+| Add a user-facing route or command |  |  |
+| Change domain behavior |  |  |
+| Change persistence or an integration |  |  |
+| Add tests |  |  |
 
-## Assumptions And Unknowns
+## Caveats and unknowns
 
-List anything inferred or not discoverable from the repository.
+- **Verified:** relevant observed facts that need emphasis.
+- **Inferred:** conclusions supported indirectly by named evidence.
+- **Unknown:** missing, contradictory, stale, or unverified information.
 ````
